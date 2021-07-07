@@ -1,18 +1,24 @@
 package com.example.outliers.service.impl;
 
+import com.example.outliers.controller.AssetController;
 import com.example.outliers.model.Asset;
 import com.example.outliers.service.AssetService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The concrete implementation of the asset service
  */
 @Service
 public class AssetServiceImpl implements AssetService {
-
+    private static final Logger LOG = LoggerFactory.getLogger(AssetServiceImpl.class);
     /**
      * The repository DOA layer
      */
@@ -36,6 +42,7 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public Asset update(Asset updatedAsset) {
         Asset asset = findById(updatedAsset.getId());
+        LOG.info("Response from {}", AssetServiceImpl.class.getSimpleName());
         asset.setAge(updatedAsset.getAge());
         asset.setUptime(updatedAsset.getUptime());
         asset.setNumOfFailures(updatedAsset.getNumOfFailures());
@@ -58,27 +65,26 @@ public class AssetServiceImpl implements AssetService {
 
         //Iterate Asset ages and normalise date to days
         for (Asset asset : assets) {
-            if(asset != null){
-                if(asset.getAge() != null && asset.getAge() != ""){
+            if (asset != null) {
+                LOG.debug("Response from {}", AssetServiceImpl.class.getSimpleName());
+                if (asset.getAge() != null && asset.getAge() != "") {
                     String age = asset.getAge();
-                    if (age != null && age != ""){
-                        String[] ageArray = age.split(" ");
-                        int number = Integer.parseInt(ageArray[0]);
-                        String timeUnit = ageArray[1];
-                        //normalise the ages into days
-                        int unitsToDays = timeUnitByValue(timeUnit);
-                        double actualPeriod =  number * unitsToDays;
+                    String[] ageArray = age.split(" ");
+                    int number = Integer.parseInt(ageArray[0]);
+                    String timeUnit = ageArray[1];
+                    //normalise the ages into days
+                    int unitsToDays = timeUnitByValue(timeUnit);
+                    double actualPeriod = number * unitsToDays;
 
-                        mapAssetIdValue.put(actualPeriod,asset.getId());
-                        actualPeriods.add(actualPeriod);
-                    }
+                    mapAssetIdValue.put(actualPeriod, asset.getId());
+                    actualPeriods.add(actualPeriod);
                 }
             }
         }
         //find the outliers
-        if(actualPeriods != null && actualPeriods.size()>0){
+        if (actualPeriods != null && actualPeriods.size() > 0) {
             outlierAges = getOutliers(actualPeriods);
-            for (double outlierAge:outlierAges){
+            for (double outlierAge : outlierAges) {
                 outlierAssetIds.add(mapAssetIdValue.get(outlierAge));
             }
         }
@@ -102,6 +108,7 @@ public class AssetServiceImpl implements AssetService {
         double iqr = q3 - q1;
         double lowerFence = q1 - 1.5 * iqr;
         double upperFence = q3 + 1.5 * iqr;
+        //use foreach
         for (int i = 0; i < actualPeriods.size(); i++) {
             if (actualPeriods.get(i) < lowerFence || actualPeriods.get(i) > upperFence)
                 output.add(actualPeriods.get(i));
@@ -116,19 +123,24 @@ public class AssetServiceImpl implements AssetService {
             return data.get(data.size() / 2);
     }
 
-    private int timeUnitByValue(String timeUnit){
+    private int timeUnitByValue(String timeUnit) {
         int result = 0;
-        if (timeUnit != null && timeUnit != ""){
+        if (timeUnit != null && timeUnit != "") {
+            LOG.debug("Response from {}", AssetServiceImpl.class.getSimpleName());
             switch (timeUnit) {
-                case "year": result =  365;
-                break;
-                case "month": result = 31;
-                break;
-                case "day": result = 1;
-                break;
-                default:result=0;
+                case "year":
+                    result = 365;
+                    break;
+                case "month":
+                    result = 31;
+                    break;
+                case "day":
+                    result = 1;
+                    break;
+                default:
+                    result = 0;
             }
-            }
+        }
 
         return result;
     }

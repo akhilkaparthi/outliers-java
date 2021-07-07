@@ -12,8 +12,7 @@ public interface AssetService {
     /**
      * Saves a asset to the database. If the asset does not exist is inserted and it's id is populated.
      *
-     * @param asset
-     *         the asset to save
+     * @param asset the asset to save
      * @return the saved asset
      */
     Asset save(final Asset asset);
@@ -28,8 +27,7 @@ public interface AssetService {
     /**
      * Updates a asset to the database. If the asset does not exist is inserted and it's id is populated.
      *
-     * @param updateAsset
-     *         the asset to save
+     * @param updateAsset the asset to save
      * @return the saved asset
      */
     Asset update(final Asset updateAsset);
@@ -37,8 +35,7 @@ public interface AssetService {
     /**
      * Obtains a list of asset with a  match to the supplied
      *
-     * @param id
-     *         the wildcard id of assets to find
+     * @param id the wildcard id of assets to find
      * @return Obtains a list of matching assets
      */
     Asset findById(Long id);

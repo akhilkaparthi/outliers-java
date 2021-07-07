@@ -1,26 +1,40 @@
 package com.example.outliers.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 public class Asset implements Serializable {
-    /** Entity ID. */
+    /**
+     * Entity ID.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
     private Long id;
 
-    /** The version used for optimistic locking. */
+    /**
+     * The version used for optimistic locking.
+     */
     @Version
     @Column(name = "VERSION")
     private Integer version;
 
+    @NotNull(message = "Age may not be null")
+    @NotEmpty(message = "Age may not be empty")
     private String age;
-    private String uptime;
-    private int numOfFailures;
 
+    @NotNull(message = "Uptime may not be null")
+    @NotEmpty(message = "Uptime may not be empty")
+    private String uptime;
+
+    @NotNull(message = "numOfFailures positive number value is required")
+    @Min(value = 0, message = "numOfFailures positive number, min 0 is required")
+    private int numOfFailures;
 
     public Asset() {
     }
@@ -67,7 +81,8 @@ public class Asset implements Serializable {
                 '}';
     }
 
-    @Override public boolean equals(final Object o) {
+    @Override
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -78,7 +93,8 @@ public class Asset implements Serializable {
         return Objects.equals(id, asset.id);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(id);
     }
 }

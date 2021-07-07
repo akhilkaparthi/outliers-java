@@ -32,6 +32,15 @@ Model---> Asset.java,
 Service----> AssetService.java
 
 
+## Following properties are used for metrics and monitoring
+prometheus and actuator
+
+## Used for CI/CD
+Distributed Management
+SEM section
+
+
+
 
  
 
